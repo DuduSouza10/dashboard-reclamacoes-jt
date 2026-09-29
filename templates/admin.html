@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}STATUS PEDIDO - Assistentes{% endblock %}
+{% block body %}
+<div class="app-shell admin-shell">
+  <header class="topbar">
+    <div class="brand"><img src="{{ url_for('static', filename='img/jt_logo.png') }}" alt="J&T"></div>
+    <div class="title-wrap"><h1>STATUS PEDIDO</h1><p>Área protegida para atualização da base</p></div>
+    <div class="top-actions"><a class="btn ghost" href="/">Dashboard</a><form action="/logout" method="post"><button class="btn ghost">Sair</button></form></div>
+  </header>
+  <main>
+    <section class="card admin-tools">
+      <div class="section-heading"><span>Importar / atualizar base</span></div>
+      <div class="import-row">
+        <input type="file" id="importFile" accept=".xlsx,.csv">
+        <select id="importMode"><option value="merge">Mesclar / atualizar existentes</option><option value="replace">Substituir toda a base</option></select>
+        <button id="importBtn" class="btn primary">Importar</button>
+        <a href="/export.csv" class="btn ghost">Exportar CSV</a>
+      </div>
+      <div id="importResult" class="muted"></div>
+    </section>
+
+    <section class="card admin-tools">
+      <div class="section-heading"><span>Filtros e ações em massa</span><button id="newRecordBtn" class="btn primary">+ Novo caso</button></div>
+      <div class="admin-filter-grid">
+        <input id="adminSearch" type="search" placeholder="Ticket, remessa, cliente ou base">
+        <select id="adminStatus"></select><select id="adminRegional"></select><select id="adminRM"></select>
+        <button id="adminFilterBtn" class="btn ghost">Filtrar</button>
+      </div>
+      <div class="bulk-row">
+        <strong><span id="selectedCount">0</span> selecionado(s)</strong>
+        <select id="bulkStatus"><option value="">Status...</option><option>Entregue</option><option>Pendente</option><option>Extravio</option></select>
+        <select id="bulkAnexo"><option value="">Anexo...</option><option>Sim</option><option>Não</option></select>
+        <input id="bulkRetorno" placeholder="Retorno (opcional)">
+        <button id="bulkApply" class="btn primary">Aplicar</button>
+      </div>
+    </section>
+
+    <section class="card table-card admin-table-card">
+      <div class="section-heading"><span>Registros</span><span class="muted" id="adminRecordCount"></span></div>
+      <div class="table-scroll"><table class="admin-table"><thead><tr><th><input type="checkbox" id="selectAll"></th><th>Data</th><th>Regional</th><th>Ticket</th><th>Remessa</th><th>Cliente</th><th>Base</th><th>Supervisor</th><th>RM</th><th>Dupla</th><th>Retorno</th><th>Valor</th><th>Anexo</th><th>Status</th><th>Ações</th></tr></thead><tbody id="adminTable"></tbody></table></div>
+      <div class="pagination"><button id="adminPrev" class="btn ghost">‹</button><span id="adminPageInfo"></span><button id="adminNext" class="btn ghost">›</button></div>
+    </section>
+  </main>
+  <footer>Developed by: Eduardo Rodrigues</footer>
+</div>
+
+<dialog id="recordDialog" class="record-dialog">
+  <form method="dialog" id="recordForm">
+    <div class="section-heading"><span id="dialogTitle">Novo caso</span><button class="icon-btn" value="cancel">×</button></div>
+    <input type="hidden" id="recordId">
+    <div class="form-grid">
+      <label>Data<input id="fData" type="date" required></label><label>Regional<input id="fRegional" required></label>
+      <label>Número do ticket<input id="fTicket" required></label><label>Remessa<input id="fRemessa" required></label>
+      <label>Cliente<input id="fCliente" required></label><label>Base<input id="fBase" required></label>
+      <label>Supervisor<input id="fSupervisor" required></label><label>RM<input id="fRM" required></label>
+      <label>Dupla<input id="fDupla" required></label><label>Retorno<input id="fRetorno" required></label>
+      <label>Valor<input id="fValor" type="number" step="0.01" required></label>
+      <label>Anexo<select id="fAnexo"><option>Não</option><option>Sim</option></select></label>
+      <label>Status<select id="fStatus"><option>Pendente</option><option>Entregue</option><option>Extravio</option></select></label>
+    </div>
+    <div class="dialog-actions"><button type="button" id="cancelDialog" class="btn ghost">Cancelar</button><button type="button" id="saveRecord" class="btn primary">Salvar</button></div>
+  </form>
+</dialog>
+<div id="toast" class="toast hidden"></div>
+<div id="loading" class="loading hidden"><div class="spinner"></div></div>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

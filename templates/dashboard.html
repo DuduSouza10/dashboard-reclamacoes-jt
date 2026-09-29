@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Controle de Reclamação Atendimento{% endblock %}
+{% block head %}<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>{% endblock %}
+{% block body %}
+<div class="app-shell">
+  <header class="topbar">
+    <div class="brand"><img src="{{ url_for('static', filename='img/jt_logo.png') }}" alt="J&T Express"></div>
+    <div class="title-wrap">
+      <h1 data-i18n="title">Controle de Reclamação Atendimento</h1>
+      <p data-i18n="subtitle">Visão gerencial do tratamento das reclamações</p>
+    </div>
+    <div class="top-actions">
+      <select id="language" class="language-select" aria-label="Idioma"><option value="pt">Português</option><option value="zh">中文</option></select>
+      <a href="/login" class="btn ghost" data-i18n="assistants">Assistentes</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="filter-panel card">
+      <div class="section-heading"><span data-i18n="filters">Filtros</span><button id="clearFilters" class="link-btn" data-i18n="clear">Limpar filtros</button></div>
+      <div class="filters-grid">
+        <label><span data-i18n="client">Cliente</span><select id="cliente"></select></label>
+        <label><span data-i18n="from">Data de</span><input type="date" id="from"></label>
+        <label><span data-i18n="to">Data até</span><input type="date" id="to"></label>
+        <label><span data-i18n="regional">Regional</span><select id="regional"></select></label>
+        <label><span data-i18n="base">Base</span><select id="base"></select></label>
+        <label><span data-i18n="supervisor">Supervisor</span><select id="supervisor"></select></label>
+        <label><span>RM</span><select id="rm"></select></label>
+        <label><span data-i18n="pair">Dupla (Atendimento)</span><select id="dupla"></select></label>
+        <label><span data-i18n="return">Retorno</span><select id="retorno"></select></label>
+        <label><span data-i18n="attachment">Anexo</span><select id="anexo"></select></label>
+        <label><span data-i18n="status">Status</span><select id="status"></select></label>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi card"><span class="kpi-value" id="kPedidos">0</span><span class="kpi-label" data-i18n="orders">Pedidos</span></article>
+      <article class="kpi card"><span class="kpi-value" id="kValor">R$ 0</span><span class="kpi-label" data-i18n="value">Valor da mercadoria</span></article>
+      <article class="kpi card green"><span class="kpi-value" id="kEntregue">0</span><span class="kpi-label" data-i18n="delivered">Entregue</span></article>
+      <article class="kpi card amber"><span class="kpi-value" id="kPendente">0</span><span class="kpi-label" data-i18n="pending">Pendente de atualização</span></article>
+      <article class="kpi card red"><span class="kpi-value" id="kExtravio">0</span><span class="kpi-label" data-i18n="loss">Extravio</span></article>
+      <article class="kpi card"><span class="kpi-value" id="kReversao">0,0%</span><span class="kpi-label" data-i18n="reversal">% reversão</span></article>
+    </section>
+
+    <section class="chart-grid">
+      <article class="card chart-card"><div class="section-heading"><span data-i18n="statusDist">Distribuição por status</span></div><div class="canvas-wrap"><canvas id="statusChart"></canvas></div></article>
+      <article class="card chart-card wide"><div class="section-heading"><span data-i18n="evolution">Evolução diária</span></div><div class="canvas-wrap"><canvas id="dailyChart"></canvas></div></article>
+      <article class="card chart-card"><div class="section-heading"><span data-i18n="topBases">Bases com maior volume</span></div><div class="canvas-wrap"><canvas id="baseChart"></canvas></div></article>
+    </section>
+
+    <section class="card table-card">
+      <div class="section-heading"><span data-i18n="byRm">Por RM</span></div>
+      <div class="table-scroll"><table><thead><tr><th>RM</th><th data-i18n="orders">Pedidos</th><th data-i18n="valueShort">Valor</th><th data-i18n="delivered">Entregue</th><th data-i18n="pendingShort">Pendente</th><th data-i18n="loss">Extravio</th><th data-i18n="others">Outros</th></tr></thead><tbody id="rmTable"></tbody></table></div>
+    </section>
+
+    <section class="card table-card">
+      <div class="section-heading"><span data-i18n="byPair">Por Dupla</span></div>
+      <div class="table-scroll"><table><thead><tr><th data-i18n="pair">Dupla (Atendimento)</th><th data-i18n="orders">Pedidos</th><th data-i18n="valueShort">Valor</th><th data-i18n="delivered">Entregue</th><th data-i18n="pendingShort">Pendente</th><th data-i18n="loss">Extravio</th><th data-i18n="others">Outros</th></tr></thead><tbody id="duplaTable"></tbody></table></div>
+    </section>
+
+    <section class="card records-card">
+      <div class="section-heading"><span data-i18n="cases">Casos</span><span class="muted" id="recordCount"></span></div>
+      <div class="records-toolbar"><input type="search" id="search" placeholder="Ticket, remessa, cliente ou base"><button class="btn ghost" id="searchBtn" data-i18n="search">Pesquisar</button></div>
+      <div class="table-scroll"><table class="records-table"><thead><tr><th data-i18n="date">Data</th><th data-i18n="regional">Regional</th><th data-i18n="ticket">Ticket</th><th data-i18n="shipment">Remessa</th><th data-i18n="client">Cliente</th><th data-i18n="base">Base</th><th>RM</th><th data-i18n="pair">Dupla</th><th data-i18n="return">Retorno</th><th data-i18n="valueShort">Valor</th><th data-i18n="attachment">Anexo</th><th data-i18n="status">Status</th></tr></thead><tbody id="recordsTable"></tbody></table></div>
+      <div class="pagination"><button id="prevPage" class="btn ghost">‹</button><span id="pageInfo"></span><button id="nextPage" class="btn ghost">›</button></div>
+    </section>
+  </main>
+  <footer>Developed by: Eduardo Rodrigues</footer>
+</div>
+<div id="loading" class="loading hidden"><div class="spinner"></div></div>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

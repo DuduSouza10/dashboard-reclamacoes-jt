@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Acesso dos Assistentes{% endblock %}
+{% block body %}
+<div class="login-page">
+  <div class="login-card card">
+    <img src="{{ url_for('static', filename='img/jt_logo.png') }}" alt="J&T Express" class="login-logo">
+    <h1>Acesso dos Assistentes</h1>
+    <p>Atualizações na base STATUS PEDIDO ficam bloqueadas para o público.</p>
+    <form method="post">
+      <label>Senha<input name="password" type="password" autofocus required></label>
+      {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+      <button class="btn primary" type="submit">Entrar</button>
+      <a href="/" class="btn ghost">Voltar ao dashboard</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
